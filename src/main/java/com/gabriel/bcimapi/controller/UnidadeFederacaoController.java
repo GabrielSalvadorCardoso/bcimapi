@@ -18,14 +18,17 @@ import com.gabriel.bcimapi.serializer.UnidadeFederacaoSerializer;
 import com.gabriel.bcimapi.service.UnidadeFederacaoService;
 
 @RestController
-@RequestMapping("unidade-federacao")
+@RequestMapping(UnidadeFederacaoController.UNIDADE_FEDERACAO_COLLECTION_PATH)
 public class UnidadeFederacaoController {
+    public static final String UNIDADE_FEDERACAO_COLLECTION_PATH = "unidade-federacao";
     @Autowired
     private UnidadeFederacaoService service;
 
     @GetMapping
-    public ResponseEntity<List<UnidadeFederacao>> findAll() {
-        return ResponseEntity.ok().body(this.service.findAll());
+    public ResponseEntity<String> findAll() throws JsonMappingException, JsonProcessingException {
+        List<UnidadeFederacao> ufs = this.service.findAll();
+        String ufJson = UnidadeFederacaoSerializer.toJson(ufs);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(ufJson);
     }
 
     // http://localhost:8980/unidade-federacao/55615
