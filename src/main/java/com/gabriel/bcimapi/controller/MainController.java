@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,7 +23,16 @@ public class MainController {
     private ServerProperties serverProperties;
 
     @GetMapping
-    public ResponseEntity<String> landingPage() throws JsonProcessingException, MalformedURLException {
+    public ResponseEntity<String> landingPage(@RequestParam(required = false, name="f") String f) throws JsonProcessingException, MalformedURLException {
+        if(f != null && f.equals("html")) {
+            return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(MainSerializer.toHTML(this.serverProperties));
+        }
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(MainSerializer.toJson(this.serverProperties));
+    }
+
+    @GetMapping(value="conformance")
+    public ResponseEntity<String> conformance() throws JsonProcessingException, MalformedURLException {   
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(MainSerializer.conformance());
+        // return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("{\"Error\":\"Invalid Params\"}");
     }
 }

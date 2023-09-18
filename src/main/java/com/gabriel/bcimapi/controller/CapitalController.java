@@ -28,9 +28,10 @@ public class CapitalController {
     private CapitalService service;
 
     @GetMapping
-    public ResponseEntity<List<Capital>> findAll() {
+    public ResponseEntity<String> findAll() throws JsonMappingException, JsonProcessingException {
         List<Capital> capitais = this.service.findAll();
-        return ResponseEntity.ok().body(capitais);
+        String capitaisStr = CapitalSerializer.toJson(capitais);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(capitaisStr);
     }
 
     // http://localhost:8080/capital/295765
