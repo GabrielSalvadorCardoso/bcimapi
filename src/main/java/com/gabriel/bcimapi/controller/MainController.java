@@ -1,9 +1,15 @@
 package com.gabriel.bcimapi.controller;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.charset.Charset;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +28,12 @@ public class MainController {
     @Autowired
     private ServerProperties serverProperties;
 
+    private final ResourceLoader resourceLoader;
+
+    public MainController(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
     @GetMapping
     public ResponseEntity<String> landingPage(@RequestParam(required = false, name="f") String f) throws JsonProcessingException, MalformedURLException {
         if(f != null && f.equals("html")) {
@@ -34,5 +46,42 @@ public class MainController {
     public ResponseEntity<String> conformance() throws JsonProcessingException, MalformedURLException {   
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(MainSerializer.conformance());
         // return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("{\"Error\":\"Invalid Params\"}");
+    }
+
+    @GetMapping(value="api")
+    public ResponseEntity<String> api() throws IOException {
+        Resource resource = this.resourceLoader.getResource("classpath:/api-description.yaml");
+        if (resource.exists()) {
+            return ResponseEntity
+                .ok()
+                .contentType(MediaType.parseMediaType("application/yaml"))
+                .header("Content-Disposition", "inline; filename=api.yml")
+                .body(new InputStreamResource(resource.getInputStream()).getContentAsString(Charset.forName("UTF8")));
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(value="api.html")
+    public ResponseEntity<String> apiHTML() {
+        //Resource resource = this.resourceLoader.getResource("classpath:/api-description.yaml");
+        //String content = new InputStreamResource(resource.getInputStream()).getContentAsString(Charset.forName("UTF8"));
+
+        String markdownValue = "<!DOCTYPE html><html><body><code>---\n" +
+                "key: value\n" +
+                "list:\n" +
+                "  - value 1\n" +
+                "  - value 2\n" +
+                "literal: |\n" +
+                "  this is literal value.\n" +
+                "\n" +
+                "  literal values 2\n" +
+                "---\n" +
+                "\n" +
+                "# Java Tutorial</code></body></html>";
+        //String htmlValue = MainSerializer.convertMarkdownToHTML(markdownValue);
+
+        
+        return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(markdownValue);
     }
 }

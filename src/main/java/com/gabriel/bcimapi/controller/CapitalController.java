@@ -22,12 +22,12 @@ import com.gabriel.bcimapi.service.CapitalService;
 @RestController
 @RequestMapping(CapitalController.CAPITAL_COLLECTION_PATH)
 public class CapitalController {
-    public static final String CAPITAL_COLLECTION_PATH = "capital";
+    public static final String CAPITAL_COLLECTION_PATH = "collections/capital";
 
     @Autowired
     private CapitalService service;
 
-    @GetMapping
+    @GetMapping(value = "/items")
     public ResponseEntity<String> findAll() throws JsonMappingException, JsonProcessingException {
         List<Capital> capitais = this.service.findAll();
         String capitaisStr = CapitalSerializer.toJson(capitais);
@@ -35,7 +35,7 @@ public class CapitalController {
     }
 
     // http://localhost:8080/capital/295765
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/items/{id}")
     public ResponseEntity<String> findById(@PathVariable Long id) throws JsonMappingException, JsonProcessingException {
         Optional<Capital> capitalResult = this.service.findById(id);
         Capital capital = capitalResult.get();

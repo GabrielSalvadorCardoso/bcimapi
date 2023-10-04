@@ -1,0 +1,392 @@
+openapi: 3.0.2
+info:
+  title: "Base Cartográfica Contínua do Brasil, ao milionésimo (BCIM)"
+  version: '1.0.0'
+  description: |-
+    Base Cartográfica Contínua do Brasil na escala de 1:1 000 000 constituída 
+    a partir das folhas da Carta Internacional do Mundo ao milionésimo,
+    atualizada a partir de compilação do mapeamento topográfico em escalas maiores, 
+    interpretação de imagens de satélite, de nomes geográficos e dados fornecidos 
+    por órgãos setoriais parceiros.
+  contact:
+    name:  Instituto Brasileiro de Geografia e Estatística - IBGE
+    email: ibge@ibge.gov.br
+    url: 'https://www.ibge.gov.br/'
+servers:
+  - url: 'ec2-3-17-79-86.us-east-2.compute.amazonaws.com'
+    description: Servidor de produção
+  - url: 'https://localhost:8080/'
+    description: Servidor de desenvolvimento
+tags:
+  - name: Capabilities
+    description: |-
+      Caracteristicas essenciais desta API
+  - name: Data
+    description: |-
+      Acesso aos dados (feições)
+paths:
+  '/':
+    get:
+      tags:
+        - Capabilities
+      summary: landing page
+      description: |-
+        A página inicial disponibiliza links para denifição da API, declarações de conformidade
+        e a coleção de feições desse conjunto de dados
+      operationId: getLandingPage
+      responses:
+        '200':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/LandingPage'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  '/conformance':
+    get:
+      tags:
+        - Capabilities
+      summary: Informações relacionadas as especificações as quais esta API esta em conformidade
+      description: |-
+        Uma lista de todas as classes de conformidade em que este servidor segue
+      operationId: getConformanceDeclaration
+      responses:
+        '200':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ConformanceDeclaration'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  '/collections':
+    get:
+      tags:
+        - Capabilities
+      summary: A coleção de feições presentes no conjunto de dados
+      operationId: getCollections
+      responses:
+        '200':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/Collections'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  '/collections/capital':
+    get:
+      tags:
+        - Capabilities
+      summary: |-
+        Informações sobre capitais
+      operationId: describeCollection
+      responses:
+        '200':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/Collection'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  '/collections/capital/items':
+    get:
+      tags:
+        - Data
+      summary: Requisitar capitais
+      description: |-
+        Requisitar capitais.
+
+        Use a negociação de conteúdo para solicitar os dados no formato HTML ou GeoJSON.
+      operationId: getFeatures
+      parameters:
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/limit'
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/bbox'
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/datetime'
+        - $ref: '#/components/parameters/function'
+      responses:
+        '200':
+          description: |-
+            A resposta é um documento consistindo de feições de capitais.
+            O conjunto de capitais é determinada pelo servidor baseado nos parâmetros
+            passados na requisição. Para suportar conjuntos maiores sem sobrecarregar
+            o cliente, a API suporta acesso paginado com links para a próxima página,
+            caso mais feições sejam selecionadas além do tamanho da página.
+
+            Os parâmetros `bbox` e `datetime` podem ser usados para selecionar apenas
+            um subconjunto de feições (as feições que estão dentro do retângulo envolvente
+            ou no intervalo de tempo). O parâmetros `bbox` também coincide com todas as
+            feições na coleção que não são associadas a uma localização. O parâmetro
+            `datetime` também coincide com todas as feições na coleção que não são associadas
+            com um intervalo de tempo.
+
+            O parâmetro `limit` pode ser usado para controlar o subconjunto de feições a
+            serem retornadas na resposta, o tamanho da página. Cada página deve incluir
+            informações sobre o número de feições selecionadas e número de feições
+            retornadas (`numberMatched` e `numberReturned`) assim como links para
+            suporte de paginação (link de relação `next`).
+          content:
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/capitalCollectionGeoJSON'
+              example:
+                type: FeatureCollection
+                links:
+                  - href: 'http://ec2-3-17-79-86.us-east-2.compute.amazonaws.com/collections/capital/items'
+                    rel: self
+                    type: application/geo+json
+                    title: this document
+                  - href: 'http://ec2-3-17-79-86.us-east-2.compute.amazonaws.com/collections/capital/items.html'
+                    rel: alternate
+                    type: text/html
+                    title: this document as HTML
+                  - href: 'http://ec2-3-17-79-86.us-east-2.compute.amazonaws.com/collections/capital/items&offset=10&limit=2'
+                    rel: next
+                    type: application/geo+json
+                    title: next page
+                timeStamp: '2018-04-03T14:52:23Z'
+                numberMatched: 123
+                numberReturned: 2
+                features:
+                  - type: Feature
+                    id: '123'
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        - ...
+                    properties:
+                      nome: 'Rio de Janeiro'
+                      tipocapital: 'Capital Estadual'
+                  - type: Feature
+                    id: '132'
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        - ...
+                    properties:
+                      nome: 'Curitiba'
+                      tipocapital: 'Capital Estadual'
+            text/html:
+              schema:
+                type: string
+        '400':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  '/collections/capital/items/{featureId}':
+    get:
+      tags:
+        - Data
+      summary: Requisitar uma única capital
+      description: |-
+        Requisita uma capital com id `featureId`.
+
+        Use a negociação de conteúdo para solicitar os dados no formato HTML ou GeoJSON.
+      operationId: getFeature
+      parameters:
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/featureId'
+      responses:
+        '200':
+          description: |-
+            Requisita uma capital com id `featureId`
+          content:
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/capitalGeoJSON'
+              example:
+                type: Feature
+                links:
+                  - href: 'http://localhost:8080/id/capital/123'
+                    rel: canonical
+                    title: URI canonica de capital
+                  - href: 'http://localhost:8080/collections/capital/items/123.json'
+                    rel: self
+                    type: application/geo+json
+                    title: Esse documento
+                  - href: 'http://localhost:8080/collections/capital/items/123.html'
+                    rel: alternate
+                    type: text/html
+                    title: Esse documento em HTML
+                  - href: 'http://localhost:8080/collections/capital'
+                    rel: collection
+                    type: application/geo+json
+                    title: O documento de coleção
+                id: '123'
+                geometry:
+                  type: Polygon
+                  coordinates:
+                    - ...
+                properties:
+                  tipocapital: Capital Estadual
+                  nome: João Pessoa
+            text/html:
+              schema:
+                type: string
+        '404':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotFound'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+components:
+  parameters:
+    tipocapital:
+      name: tipocapital
+      in: query
+      description: |-
+        Retorna apenas as capitais de um determinado tipo.
+
+        Padrão: retorna todas as capitais
+      required: false
+      schema:
+        type: string
+        enum:
+          - Capital Estadual
+          - Capital Federal
+      style: form
+      explode: false
+      example: 'tipocapital=Capital+Estadual'
+  schemas:
+    capitalCollectionGeoJSON:
+      type: object
+      required:
+        - type
+        - features
+      properties:
+        type:
+          type: string
+          enum:
+            - FeatureCollection
+        features:
+          type: array
+          items:
+            $ref: "#/components/schemas/capitalGeoJSON"
+        links:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/link'
+        timeStamp:
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/timeStamp'
+        numberMatched:
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/numberMatched'
+        numberReturned:
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/numberReturned'
+    capitalGeoJSON:
+      type: object
+      required:
+        - type
+        - geometry
+        - properties
+      properties:
+        type:
+          type: string
+          enum:
+            - Feature
+        geometry:
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/geometryGeoJSON'
+        properties:
+          type: object
+          nullable: true
+          properties:
+            nome:
+              type: string
+            tipocapital:
+              type: string
+              enum:
+                - Capital Federal
+                - Capital Estadual
+        id:
+          oneOf:
+            - type: string
+            - type: integer
+        links:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/link'
+  '/':
+    get:
+      tags:
+        - Capabilities
+      summary: landing page
+      description: |-
+        A página inicial contém links para denifição da API, declarações
+        de conformidade e coleções de feições.
+      operationId: getLandingPage
+      responses:
+        '200':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/LandingPage'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  '/conformance':
+    get:
+      tags:
+        - Capabilities
+      summary: informações sobre especificações as quais esta API declara conformidade
+      description: |-
+        Uma lista de todas as classes de conformidade que este servidor declara conformidade
+      operationId: getConformanceDeclaration
+      responses:
+        '200':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ConformanceDeclaration'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  '/collections':
+    get:
+      tags:
+        - Capabilities
+      summary: As coleções de feições no conjunto de dados
+      operationId: getCollections
+      responses:
+        '200':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/Collections'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  '/collections/{collectionId}':
+    get:
+      tags:
+        - Capabilities
+      summary: |-
+        Descreve a coleção de feições cujo id corresponde a `collectionId`
+      operationId: describeCollection
+      parameters:
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/collectionId'
+      responses:
+        '200':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/Collection'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotFound'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  '/collections/{collectionId}/items':
+    get:
+      tags:
+        - Data
+      summary: Busca as feições
+      description: |-
+        Busca as feições na coleção de feições cujo id corresponde a `collectionId`.
+
+        Toda feição no conjunto de dados pertence a uma coleção. Um conjunto de dados
+        consiste de multplas coleções de feições. Uma coleção de feições normalmente
+        é um conjunto de feições de tipos semelhantes, baseados em um schema comum.
+
+        Use negociação de conteúdo para requisitar HTML ou GeoJSON.
+      operationId: getFeatures
+      parameters:
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/collectionId'
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/limit'
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/bbox'
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/datetime'
+      responses:
+        '200':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/Features'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotFound'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  '/collections/{collectionId}/items/{featureId}':
+    get:
+      tags:
+        - Data
+      summary: Busca uma única feição
+      description: |-
+        Busca a feição cujo id corresponde a `featureId` na coleção de feições,
+        que por sua vez corresponde ao id `collectionId`.
+
+        Use negociação de conteúdo para requisitar HTML ou GeoJSON.
+      operationId: getFeature
+      parameters:
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/collectionId'
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/featureId'
+      responses:
+        '200':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/Feature'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotFound'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'

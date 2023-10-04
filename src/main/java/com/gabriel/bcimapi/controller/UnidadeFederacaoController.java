@@ -20,11 +20,11 @@ import com.gabriel.bcimapi.service.UnidadeFederacaoService;
 @RestController
 @RequestMapping(UnidadeFederacaoController.UNIDADE_FEDERACAO_COLLECTION_PATH)
 public class UnidadeFederacaoController {
-    public static final String UNIDADE_FEDERACAO_COLLECTION_PATH = "unidade-federacao";
+    public static final String UNIDADE_FEDERACAO_COLLECTION_PATH = "collections/unidade-federacao";
     @Autowired
     private UnidadeFederacaoService service;
 
-    @GetMapping
+    @GetMapping(value = "/items")
     public ResponseEntity<String> findAll() throws JsonMappingException, JsonProcessingException {
         List<UnidadeFederacao> ufs = this.service.findAll();
         String ufJson = UnidadeFederacaoSerializer.toJson(ufs);
@@ -32,7 +32,7 @@ public class UnidadeFederacaoController {
     }
 
     // http://localhost:8980/unidade-federacao/55615
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/items/{id}")
     public ResponseEntity<String> findById(@PathVariable Long id) throws JsonMappingException, JsonProcessingException {
         Optional<UnidadeFederacao> ufResult = this.service.findById(id);
         UnidadeFederacao uf = ufResult.get();
