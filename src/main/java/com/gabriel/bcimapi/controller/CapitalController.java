@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,12 +40,5 @@ public class CapitalController {
         String capitalJson = CapitalSerializer.toJson(capital);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(capitalJson);
     }
-
-    /*
-    @GetMapping
-	public Page<Capital> getCityPage(Pageable pageable){
-		return service.findAll(pageable);
-	}
-     */
     
 }

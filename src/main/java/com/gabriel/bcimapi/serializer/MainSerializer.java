@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,6 +58,130 @@ public class MainSerializer {
         return html.toString();
     }
 
+    public static String collections() throws MalformedURLException, JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> content = new HashMap<>();
+        List<Object> links = new ArrayList<>();
+        List<Object> collections = new ArrayList<>();
+
+        Map<String, Object> selfLink = new HashMap<>();
+        selfLink.put("href", getSelfPath()+"/collections");
+        selfLink.put("rel", "self");
+        selfLink.put("type", MediaType.APPLICATION_JSON.toString());
+        selfLink.put("title", "Esse documento");
+
+        Map<String, Object> alternateLink = new HashMap<>();
+        alternateLink.put("href", getSelfPath()+"/collections.html");
+        alternateLink.put("rel", "alternate");
+        alternateLink.put("type", MediaType.TEXT_HTML.toString());
+        alternateLink.put("title", "Esse documento em HTML");
+
+        // TODO: HARDCODED
+        Map<String, Object> capitalCollection = new HashMap<>();
+        capitalCollection.put("id", "capital");
+        capitalCollection.put("title", "Capitais");
+        capitalCollection.put("description", "Capitais da América do Sul");
+
+        Map<String, Object> capitalSpatialExtent = new HashMap<>();
+        Map<String, Object> capitalSpatialBBoxExtent = new HashMap<>();
+        List<Double> firstBbox = new ArrayList<>();
+        firstBbox.add(-78.50);
+        firstBbox.add(-34.86);
+        firstBbox.add(-34.86);
+        firstBbox.add(10.49);
+        List<List<Double>> bboxes = new ArrayList<>();
+        bboxes.add(firstBbox);
+        capitalSpatialBBoxExtent.put("bbox", bboxes);
+        capitalSpatialExtent.put("spatial", capitalSpatialBBoxExtent);
+        capitalCollection.put("extent", capitalSpatialExtent);
+        
+        capitalCollection.put("itemType", "feature");
+
+        List<Object> capitalCollectionLinks = new ArrayList<>();
+        Map<String, Object> capitalCollectionSelfLink = new HashMap<>();
+        capitalCollectionSelfLink.put("href", getSelfPath()+"/collections/capital");
+        capitalCollectionSelfLink.put("rel", "self");
+        capitalCollectionSelfLink.put("title", "Essa coleção");
+        capitalCollectionLinks.add(capitalCollectionSelfLink);
+        Map<String, Object> capitalCollectionItemsLink = new HashMap<>();
+        capitalCollectionItemsLink.put("href", getSelfPath()+"/collections/capital/items");
+        capitalCollectionItemsLink.put("rel", "items");
+        capitalCollectionItemsLink.put("title", "Capitais");
+        capitalCollectionLinks.add(capitalCollectionItemsLink);
+        Map<String, Object> capitalCollectionItemLink = new HashMap<>();
+        capitalCollectionItemLink.put("href", getSelfPath()+"/collections/capital/items/{featureId}");
+        capitalCollectionItemLink.put("rel", "item");
+        capitalCollectionItemLink.put("title", "Template de Link para feições de capitais");
+        capitalCollectionItemLink.put("templated", true);
+        capitalCollectionLinks.add(capitalCollectionItemLink);
+
+        capitalCollection.put("links", capitalCollectionLinks);
+
+        collections.add(capitalCollection);
+
+         // TODO: HARDCODED
+         /*
+        "links": [
+          {
+            "href": "http://localhost:8080/collections/unidade-federacao/items/{featureId}",
+            "rel": "item",
+            "title": "Template de Link para feições de unidades federativas",
+            "templated": true
+          }
+        ]
+      }
+          */
+        Map<String, Object> ufCollection = new HashMap<>();
+        ufCollection.put("id", "unidade-federacao");
+        ufCollection.put("title", "Unidades Federativas");
+        ufCollection.put("description", "Unidades Federativas do Brasil");
+
+        Map<String, Object> ufSpatialExtent = new HashMap<>();
+        Map<String, Object> ufSpatialBBoxExtent = new HashMap<>();
+        List<Double> uffirstBbox = new ArrayList<>();
+        uffirstBbox.add(-73.99);
+        uffirstBbox.add(-33.75);
+        uffirstBbox.add(-29.29);
+        uffirstBbox.add(5.27);
+        List<List<Double>> ufbboxes = new ArrayList<>();
+        ufbboxes.add(uffirstBbox);
+        ufSpatialBBoxExtent.put("bbox", ufbboxes);
+        ufSpatialExtent.put("spatial", capitalSpatialBBoxExtent);
+        ufCollection.put("extent", ufSpatialExtent);
+        
+        ufCollection.put("itemType", "feature");
+
+        List<Object> ufCollectionLinks = new ArrayList<>();
+        Map<String, Object> ufCollectionSelfLink = new HashMap<>();
+        ufCollectionSelfLink.put("href", getSelfPath()+"/collections/unidade-federacao");
+        ufCollectionSelfLink.put("rel", "self");
+        ufCollectionSelfLink.put("title", "Essa coleção");
+        ufCollectionLinks.add(ufCollectionSelfLink);
+        Map<String, Object> ufCollectionItemsLink = new HashMap<>();
+        ufCollectionItemsLink.put("href", getSelfPath()+"/collections/unidade-federacao/items");
+        ufCollectionItemsLink.put("rel", "items");
+        ufCollectionItemsLink.put("title", "Unidades Federativas");
+        ufCollectionLinks.add(ufCollectionItemsLink);
+        Map<String, Object> ufCollectionItemLink = new HashMap<>();
+        ufCollectionItemLink.put("href", getSelfPath()+"/collections/unidade-federacao/items/{featureId}");
+        ufCollectionItemLink.put("rel", "item");
+        ufCollectionItemLink.put("title", "Template de Link para feições de unidades federativas");
+        ufCollectionItemLink.put("templated", true);
+        ufCollectionLinks.add(ufCollectionItemLink);
+
+        ufCollection.put("links", ufCollectionLinks);
+
+        collections.add(ufCollection);
+        
+        links.add(selfLink);
+        links.add(alternateLink);
+
+        content.put("links", links);
+        content.put("collections", collections);
+        String serializer = mapper.writeValueAsString(content);
+        return serializer.toString();
+    }
+
     public static String conformance() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> content = new HashMap<>();
@@ -82,28 +207,28 @@ public class MainSerializer {
 
         Map<String, Object> selfLink = new HashMap<>();
         selfLink.put("rel", "self");
-        selfLink.put("type", "application/json");
+        selfLink.put("type", MediaType.APPLICATION_JSON.toString());
         selfLink.put("title", "Esse documento");
         selfLink.put("href", getSelfPath());
         linkObjs.add(selfLink);
 
         Map<String, Object> selfLinkHTML = new HashMap<>();
         selfLinkHTML.put("rel", "alternate");
-        selfLinkHTML.put("type", "text/html");
+        selfLinkHTML.put("type", MediaType.TEXT_HTML.toString());
         selfLinkHTML.put("title", "Esse documento em HTML");
         selfLinkHTML.put("href", getSelfPath()+"/?f=html");
         linkObjs.add(selfLinkHTML);
 
         Map<String, Object> conformanceLink = new HashMap<>();
         conformanceLink.put("rel", "conformance");
-        conformanceLink.put("type", "application/json");
+        conformanceLink.put("type", MediaType.APPLICATION_JSON.toString());
         conformanceLink.put("title", "Relação de classes de conformidade do padrão OGC API implementadas por esse servidor");
         conformanceLink.put("href", getSelfPath()+"/conformance");
         linkObjs.add(conformanceLink);
 
         Map<String, Object> collectionsInfoLink = new HashMap<>();
         collectionsInfoLink.put("rel", "data");
-        collectionsInfoLink.put("type", "application/json");
+        collectionsInfoLink.put("type", MediaType.APPLICATION_JSON.toString());
         collectionsInfoLink.put("title", "Informações sobre as coleções de feições");
         collectionsInfoLink.put("href", getSelfPath()+"/collections");
         linkObjs.add(collectionsInfoLink);
@@ -117,7 +242,7 @@ public class MainSerializer {
 
         Map<String, Object> serviceDocumentationLink = new HashMap<>();
         serviceDocumentationLink.put("rel", "service-doc");
-        serviceDocumentationLink.put("type", "text/html");
+        serviceDocumentationLink.put("type", MediaType.TEXT_HTML.toString());
         serviceDocumentationLink.put("title", "A documentação da API");
         serviceDocumentationLink.put("href", getSelfPath()+"/api.html");
         linkObjs.add(serviceDocumentationLink);

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 
+import javax.print.attribute.standard.Media;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.core.io.InputStreamResource;
@@ -20,10 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gabriel.bcimapi.serializer.MainSerializer;
 
-// implements: https://docs.ogc.org/is/17-069r4/17-069r4.html#landing_page
 // The landing page of an OGC Web API serves as the root node of the API resource tree and provides the information needed to navigate all the resources exposed through the API. 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/") // implements: https://docs.ogc.org/is/17-069r4/17-069r4.html#_api_landing_page
 public class MainController {
     @Autowired
     private ServerProperties serverProperties;
@@ -42,13 +43,17 @@ public class MainController {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(MainSerializer.toJson(this.serverProperties));
     }
 
-    @GetMapping(value="conformance")
+    @GetMapping(value="conformance") // implements: https://docs.ogc.org/is/17-069r4/17-069r4.html#_declaration_of_conformance_classes
     public ResponseEntity<String> conformance() throws JsonProcessingException, MalformedURLException {   
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(MainSerializer.conformance());
-        // return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("{\"Error\":\"Invalid Params\"}");
     }
 
-    @GetMapping(value="api")
+    @GetMapping(value="collections")
+    public ResponseEntity<String> collections() throws JsonProcessingException, MalformedURLException {
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(MainSerializer.collections());
+    }
+
+    @GetMapping(value="api") // implements: https://docs.ogc.org/is/17-069r4/17-069r4.html#_api_definition_2
     public ResponseEntity<String> api() throws IOException {
         Resource resource = this.resourceLoader.getResource("classpath:/api-description.yaml");
         if (resource.exists()) {

@@ -69,7 +69,7 @@ paths:
         - Capabilities
       summary: |-
         Informações sobre capitais
-      operationId: describeCollection
+      operationId: describeCapitalCollection
       responses:
         '200':
           $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/Collection'
@@ -84,12 +84,12 @@ paths:
         Requisitar capitais.
 
         Use a negociação de conteúdo para solicitar os dados no formato HTML ou GeoJSON.
-      operationId: getFeatures
+      operationId: getCapitalFeatures
       parameters:
         - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/limit'
         - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/bbox'
         - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/datetime'
-        - $ref: '#/components/parameters/function'
+        - $ref: '#/components/parameters/tipocapital'
       responses:
         '200':
           description: |-
@@ -168,7 +168,7 @@ paths:
         Requisita uma capital com id `featureId`.
 
         Use a negociação de conteúdo para solicitar os dados no formato HTML ou GeoJSON.
-      operationId: getFeature
+      operationId: getCapitalFeature
       parameters:
         - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/featureId'
       responses:
@@ -287,106 +287,3 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/link'
-  '/':
-    get:
-      tags:
-        - Capabilities
-      summary: landing page
-      description: |-
-        A página inicial contém links para denifição da API, declarações
-        de conformidade e coleções de feições.
-      operationId: getLandingPage
-      responses:
-        '200':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/LandingPage'
-        '500':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
-  '/conformance':
-    get:
-      tags:
-        - Capabilities
-      summary: informações sobre especificações as quais esta API declara conformidade
-      description: |-
-        Uma lista de todas as classes de conformidade que este servidor declara conformidade
-      operationId: getConformanceDeclaration
-      responses:
-        '200':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ConformanceDeclaration'
-        '500':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
-  '/collections':
-    get:
-      tags:
-        - Capabilities
-      summary: As coleções de feições no conjunto de dados
-      operationId: getCollections
-      responses:
-        '200':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/Collections'
-        '500':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
-  '/collections/{collectionId}':
-    get:
-      tags:
-        - Capabilities
-      summary: |-
-        Descreve a coleção de feições cujo id corresponde a `collectionId`
-      operationId: describeCollection
-      parameters:
-        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/collectionId'
-      responses:
-        '200':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/Collection'
-        '404':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotFound'
-        '500':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
-  '/collections/{collectionId}/items':
-    get:
-      tags:
-        - Data
-      summary: Busca as feições
-      description: |-
-        Busca as feições na coleção de feições cujo id corresponde a `collectionId`.
-
-        Toda feição no conjunto de dados pertence a uma coleção. Um conjunto de dados
-        consiste de multplas coleções de feições. Uma coleção de feições normalmente
-        é um conjunto de feições de tipos semelhantes, baseados em um schema comum.
-
-        Use negociação de conteúdo para requisitar HTML ou GeoJSON.
-      operationId: getFeatures
-      parameters:
-        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/collectionId'
-        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/limit'
-        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/bbox'
-        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/datetime'
-      responses:
-        '200':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/Features'
-        '400':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter'
-        '404':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotFound'
-        '500':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
-  '/collections/{collectionId}/items/{featureId}':
-    get:
-      tags:
-        - Data
-      summary: Busca uma única feição
-      description: |-
-        Busca a feição cujo id corresponde a `featureId` na coleção de feições,
-        que por sua vez corresponde ao id `collectionId`.
-
-        Use negociação de conteúdo para requisitar HTML ou GeoJSON.
-      operationId: getFeature
-      parameters:
-        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/collectionId'
-        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/featureId'
-      responses:
-        '200':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/Feature'
-        '404':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotFound'
-        '500':
-          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'

@@ -1,0 +1,78 @@
+{
+    "links": [
+      {
+        "href": "http://localhost:8080/collections",
+        "rel": "self",
+        "type": "application/json",
+        "title": "Esse documento" 
+      },
+      {
+        "href": "http://localhost:8080/collections.html",
+        "rel": "alternate",
+        "type": "text/html",
+        "title": "Esse documento em HTML"
+      }
+    ],
+    "collections": [
+      {
+        "id": "capital",
+        "title": "Capitais",
+        "description": "Capitais da América do Sul",
+        "extent": {
+          "spatial": {
+            "bbox": [ [ -78.50, -34.86,-34.86, 10.49 ] ]            
+          }
+        },
+        "itemType": "feature",
+        "links": [
+          {
+            "href": "http://localhost:8080/collections/capital",
+            "rel": "self",
+            "title": "Essa coleção"
+          },
+          {
+            "href": "http://localhost:8080/collections/capital/items",
+            "rel": "items",
+            "type": "application/geo+json",
+            "title": "Capitais"
+          },
+          {
+            "href": "http://localhost:8080/collections/capital/items/{featureId}",
+            "rel": "item",
+            "title": "Template de Link para feições de capitais",
+            "templated": true
+          }
+        ]
+      },
+      {
+        "id": "unidade-federacao",
+        "title": "Unidades Federativas",
+        "description": "Unidades Federativas do Brasil",
+        "extent": {
+          "spatial": {
+            "bbox": [ [ -73.99, -33.75,-29.29, 5.27 ] ]
+          }
+        },
+        "itemType": "feature",
+        "links": [
+          {
+            "href": "http://localhost:8080/collections/unidade-federacao",
+            "rel": "self",
+            "title": "Essa coleção"
+          },
+          {
+            "href": "http://localhost:8080/collections/unidade-federacao/items",
+            "rel": "items",
+            "type": "application/geo+json",
+            "title": "Unidades Federativas"
+          },
+          {
+            "href": "http://localhost:8080/collections/unidade-federacao/items/{featureId}",
+            "rel": "item",
+            "title": "Template de Link para feições de unidades federativas",
+            "templated": true
+          }
+        ]
+      }
+    ]
+}
