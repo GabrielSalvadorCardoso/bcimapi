@@ -22,4 +22,16 @@ public class UnidadeFederacaoService {
     public List<UnidadeFederacao> findAll() {
         return this.repository.findAll();
     }
+
+    public List<UnidadeFederacao> findBySiglaOrNome(String sigla, String nome) {
+        return this.repository.findBySiglaOrNome(sigla, nome);
+    }
+
+    public List<UnidadeFederacao> findBySigla(String sigla) {
+        return this.repository.findBySigla(sigla);
+    }
+
+     public List<UnidadeFederacao> findByNome(String nome) {
+        return this.repository.findByNome(nome);
+    }
 }

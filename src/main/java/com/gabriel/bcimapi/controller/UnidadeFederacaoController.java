@@ -1,6 +1,7 @@
 package com.gabriel.bcimapi.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,11 +27,33 @@ public class UnidadeFederacaoController {
     private UnidadeFederacaoService service;
 
     @GetMapping(value = "/items")
-    public ResponseEntity<String> findAll() throws JsonMappingException, JsonProcessingException {
-        List<UnidadeFederacao> ufs = this.service.findAll();
+    public ResponseEntity<String> findAll(@RequestParam Map<String, String> param) throws JsonMappingException, JsonProcessingException {
+        // if(param.size() == 2) {
+
+        // } else if(param.get())
+        String sigla = param.get("sigla");
+        String nome = param.get("nome");
+
+        List<UnidadeFederacao> ufs;
+
+        if(sigla != null && nome != null) {
+            ufs = this.service.findBySiglaOrNome(sigla, nome);
+        } else if(sigla != null) {
+            ufs = this.service.findBySigla(sigla);
+        } else if(nome != null) {
+            ufs = this.service.findByNome(nome);
+        } else {
+            ufs = this.service.findAll();
+        }
         String ufJson = UnidadeFederacaoSerializer.toJson(ufs);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(ufJson);
     }
+
+    // @GetMapping(value="/items")
+    // public ResponseEntity<String> findByParams() {
+
+    //     return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("");
+    // }
 
     // http://localhost:8980/unidade-federacao/55615
     @GetMapping(value = "/items/{id}")
@@ -39,4 +63,6 @@ public class UnidadeFederacaoController {
         String ufJson = UnidadeFederacaoSerializer.toJson(uf);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(ufJson);
     }
+
+    
 }

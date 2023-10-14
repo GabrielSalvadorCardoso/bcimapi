@@ -212,6 +212,155 @@ paths:
           $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotFound'
         '500':
           $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  '/collections/unidade-federacao':
+    get:
+      tags:
+        - Capabilities
+      summary: |-
+        Informações sobre unidades federativas
+      operationId: describeUnidadeFederacaoCollection
+      responses:
+        '200':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/Collection'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  '/collections/unidade-federacao/items':
+    get:
+      tags:
+        - Data
+      summary: Requisitar unidades federativas
+      description: |-
+        Requisitar unidades federativas.
+
+        Use a negociação de conteúdo para solicitar os dados no formato HTML ou GeoJSON.
+      operationId: getUnidadeFederacaoFeatures
+      parameters:
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/limit'
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/bbox'
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/datetime'
+        - $ref: '#/components/parameters/sigla'
+      responses:
+        '200':
+          description: |-
+            A resposta é um documento consistindo de feições de unidades da federação.
+            O conjunto de unidades da federação é determinada pelo servidor baseado nos parâmetros
+            passados na requisição. Para suportar conjuntos maiores sem sobrecarregar
+            o cliente, a API suporta acesso paginado com links para a próxima página,
+            caso mais feições sejam selecionadas além do tamanho da página.
+
+            Os parâmetros `bbox` e `datetime` podem ser usados para selecionar apenas
+            um subconjunto de feições (as feições que estão dentro do retângulo envolvente
+            ou no intervalo de tempo). O parâmetros `bbox` também coincide com todas as
+            feições na coleção que não são associadas a uma localização. O parâmetro
+            `datetime` também coincide com todas as feições na coleção que não são associadas
+            com um intervalo de tempo.
+
+            O parâmetro `limit` pode ser usado para controlar o subconjunto de feições a
+            serem retornadas na resposta, o tamanho da página. Cada página deve incluir
+            informações sobre o número de feições selecionadas e número de feições
+            retornadas (`numberMatched` e `numberReturned`) assim como links para
+            suporte de paginação (link de relação `next`).
+          content:
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/unidadeFederacaoCollectionGeoJSON'
+              example:
+                type: FeatureCollection
+                links:
+                  - href: 'http://ec2-3-17-79-86.us-east-2.compute.amazonaws.com/collections/unidade-federacao/items'
+                    rel: self
+                    type: application/geo+json
+                    title: this document
+                  - href: 'http://ec2-3-17-79-86.us-east-2.compute.amazonaws.com/collections/unidade-federacao/items.html'
+                    rel: alternate
+                    type: text/html
+                    title: this document as HTML
+                  - href: 'http://ec2-3-17-79-86.us-east-2.compute.amazonaws.com/collections/unidade-federacao/items&offset=10&limit=2'
+                    rel: next
+                    type: application/geo+json
+                    title: next page
+                timeStamp: '2018-04-03T14:52:23Z'
+                numberMatched: 123
+                numberReturned: 2
+                features:
+                  - type: Feature
+                    id: '123'
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        - ...
+                    properties:
+                      nome: 'Rio de Janeiro'
+                      sigla: 'RJ'
+                  - type: Feature
+                    id: '132'
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        - ...
+                    properties:
+                      nome: 'Paraná'
+                      sigla: 'PR'
+            text/html:
+              schema:
+                type: string
+        '400':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  '/collections/unidade-federacao/items/{featureId}':
+    get:
+      tags:
+        - Data
+      summary: Requisitar uma única unidade federativa
+      description: |-
+        Requisita uma unidade federativa com id `featureId`.
+
+        Use a negociação de conteúdo para solicitar os dados no formato HTML ou GeoJSON.
+      operationId: getUnidadeFederacaoFeature
+      parameters:
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/parameters/featureId'
+      responses:
+        '200':
+          description: |-
+            Requisita uma unidade federativa com id `featureId`
+          content:
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/unidadeFederacaoGeoJSON'
+              example:
+                type: Feature
+                links:
+                  - href: 'http://localhost:8080/id/unidade-federacao/123'
+                    rel: canonical
+                    title: URI canonica de unidade federativa
+                  - href: 'http://localhost:8080/collections/unidade-federacao/items/123.json'
+                    rel: self
+                    type: application/geo+json
+                    title: Esse documento
+                  - href: 'http://localhost:8080/collections/unidade-federacao/items/123.html'
+                    rel: alternate
+                    type: text/html
+                    title: Esse documento em HTML
+                  - href: 'http://localhost:8080/collections/unidade-federacao'
+                    rel: collection
+                    type: application/geo+json
+                    title: O documento de coleção
+                id: '123'
+                geometry:
+                  type: Polygon
+                  coordinates:
+                    - ...
+                properties:
+                  sigla: PB
+                  nome: Paraiba
+            text/html:
+              schema:
+                type: string
+        '404':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotFound'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
 components:
   parameters:
     tipocapital:
@@ -230,6 +379,22 @@ components:
       style: form
       explode: false
       example: 'tipocapital=Capital+Estadual'
+    sigla:
+      name: sigla
+      in: query
+      description: |-
+        Retorna apenas as unidades federativas de uma determinada sigla.
+
+        Padrão: retorna todas as unidades federativas
+      required: false
+      schema:
+        type: string
+        enum:
+          - RJ
+          - PR
+      style: form
+      explode: false
+      example: 'sigla=RJ'
   schemas:
     capitalCollectionGeoJSON:
       type: object
@@ -255,6 +420,30 @@ components:
           $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/numberMatched'
         numberReturned:
           $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/numberReturned'
+      unidadeFederacaoCollectionGeoJSON:
+        type: object
+        required:
+          - type
+          - features
+        properties:
+          type:
+            type:
+            enum:
+              - FeatureCollection
+          features:
+            type: array
+            items:
+              $ref: "@/component/schemas/unidadeFederativaGeoJSON"
+          links:
+            type: array
+            items:
+              $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/link'
+          timeStamp:
+            $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/timeStamp'
+          numberMatched:
+            $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/numberMatched'
+          numberReturned:
+            $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/numberReturned'
     capitalGeoJSON:
       type: object
       required:
@@ -279,6 +468,38 @@ components:
               enum:
                 - Capital Federal
                 - Capital Estadual
+        id:
+          oneOf:
+            - type: string
+            - type: integer
+        links:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/link'
+    unidadeFederacaoGeoJSON:
+      type: object
+      required:
+        - type
+        - geometry
+        - properties
+      properties:
+        type:
+          type: string
+          enum:
+            - Feature
+        geometry:
+          $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/geometryGeoJSON'
+        properties:
+          type: object
+          nullable: true
+          properties:
+            nome:
+              type: string
+            sigla:
+              type: string
+              enum:
+                - RJ
+                - PR
         id:
           oneOf:
             - type: string

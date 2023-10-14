@@ -120,17 +120,6 @@ public class MainSerializer {
         collections.add(capitalCollection);
 
          // TODO: HARDCODED
-         /*
-        "links": [
-          {
-            "href": "http://localhost:8080/collections/unidade-federacao/items/{featureId}",
-            "rel": "item",
-            "title": "Template de Link para feições de unidades federativas",
-            "templated": true
-          }
-        ]
-      }
-          */
         Map<String, Object> ufCollection = new HashMap<>();
         ufCollection.put("id", "unidade-federacao");
         ufCollection.put("title", "Unidades Federativas");
