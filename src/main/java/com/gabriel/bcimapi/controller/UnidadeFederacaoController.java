@@ -1,5 +1,6 @@
 package com.gabriel.bcimapi.controller;
 
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,7 +23,8 @@ import com.gabriel.bcimapi.service.UnidadeFederacaoService;
 @RestController
 @RequestMapping(UnidadeFederacaoController.UNIDADE_FEDERACAO_COLLECTION_PATH)
 public class UnidadeFederacaoController {
-    public static final String UNIDADE_FEDERACAO_COLLECTION_PATH = "collections/unidade-federacao";
+    public static final String UNIDADE_FEDERACAO_COLLECTION_ID = "unidade-federacao";
+    public static final String UNIDADE_FEDERACAO_COLLECTION_PATH = "collections/"+UNIDADE_FEDERACAO_COLLECTION_ID;
     @Autowired
     private UnidadeFederacaoService service;
 
@@ -49,12 +51,6 @@ public class UnidadeFederacaoController {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(ufJson);
     }
 
-    // @GetMapping(value="/items")
-    // public ResponseEntity<String> findByParams() {
-
-    //     return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("");
-    // }
-
     // http://localhost:8980/unidade-federacao/55615
     @GetMapping(value = "/items/{id}")
     public ResponseEntity<String> findById(@PathVariable Long id) throws JsonMappingException, JsonProcessingException {
@@ -64,5 +60,10 @@ public class UnidadeFederacaoController {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(ufJson);
     }
 
+    @GetMapping(value = "")
+    public ResponseEntity<String> collection() throws JsonProcessingException, MalformedURLException {
+        String content = UnidadeFederacaoSerializer.collection();
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(content);
+    }
     
 }

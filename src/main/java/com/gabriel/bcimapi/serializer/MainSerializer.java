@@ -117,8 +117,6 @@ public class MainSerializer {
 
         capitalCollection.put("links", capitalCollectionLinks);
 
-        collections.add(capitalCollection);
-
          // TODO: HARDCODED
         Map<String, Object> ufCollection = new HashMap<>();
         ufCollection.put("id", "unidade-federacao");
@@ -135,7 +133,7 @@ public class MainSerializer {
         List<List<Double>> ufbboxes = new ArrayList<>();
         ufbboxes.add(uffirstBbox);
         ufSpatialBBoxExtent.put("bbox", ufbboxes);
-        ufSpatialExtent.put("spatial", capitalSpatialBBoxExtent);
+        ufSpatialExtent.put("spatial", ufSpatialBBoxExtent);
         ufCollection.put("extent", ufSpatialExtent);
         
         ufCollection.put("itemType", "feature");
@@ -161,6 +159,7 @@ public class MainSerializer {
         ufCollection.put("links", ufCollectionLinks);
 
         collections.add(ufCollection);
+        collections.add(capitalCollection);
         
         links.add(selfLink);
         links.add(alternateLink);
@@ -271,7 +270,7 @@ public class MainSerializer {
         selfSb
         .append(selfUrl.getProtocol()).append(URL_PROTOCOL_SEP)
         .append(selfUrl.getHost());
-        if(isNotDefaultPort(selfUrl.getPort())) {
+        if(isNotDefaultPort(selfUrl.getPort()) && selfUrl.getPort() != -1) {
             selfSb.append(URL_HOST_SEP).append(selfUrl.getPort());
         }
         return selfSb.toString();
